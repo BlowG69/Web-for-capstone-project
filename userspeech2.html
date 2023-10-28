@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="output2.css">
+    <title>Display</title>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="outputlogo.jpg" alt="Your Logo">
+        </div>
+        <div class="buttons">
+            <button id="homeBtn"><a href="index.html">HOME</a></button>
+            <button id="openModalButton">EXIT</button>
+        </div>
+    </div>
+    <div class="container">
+        <button id="startButton">Start Listening</button>
+        <p>Spoken Text:</p>
+        <label id="spokenText"></label>
+        <p>Chat:</p>
+        <label id="chatchat"></label>
+    </div>
+
+    <!-- MODAL WHEN EXIT IS PRESSED -->
+    <div id="myModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="closeModal" style="cursor: pointer; position: absolute; top: 10px; right: 10px;">&times;</span>
+            <img src="INPUT.jpg" alt="Modal Image">
+            <div class="centered">
+                <h1>Do you want to exit?</h1>
+                <button><a href="index.html">YES</a></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
+
+    <script>
+        const startButton = document.getElementById("startButton");
+        const spokenText = document.getElementById("spokenText");
+        const firebaseConfig = {
+                    apiKey: "AIzaSyA5GAprlsMs8y5K1Zs5o9dU4Yf1IXI6SDU",
+                    authDomain: "sign-language-321a6.firebaseapp.com",
+                    databaseURL: "https://sign-language-321a6-default-rtdb.firebaseio.com",
+                    projectId: "sign-language-321a6",
+                    storageBucket: "sign-language-321a6.appspot.com",
+                    messagingSenderId: "1055103413451",
+                    appId: "1:1055103413451:web:72ef9f70e5f751684b3f4e",
+                    measurementId: "G-B07XWE015G"
+                };
+                firebase.initializeApp(firebaseConfig);
+
+                // Get a reference to the Firebase database
+                const database = firebase.database();
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US'; // Set the language to your desired language
+
+            startButton.addEventListener('click', function () {
+                recognition.start();
+                startButton.innerHTML = 'Listening...';
+            });
+
+            recognition.onresult = function (event) {
+                const result = event.results[0][0].transcript;
+                spokenText.textContent = result;
+                startButton.innerHTML = 'Start Listening';
+
+                // Initialize Firebase
+                const ref = database.ref('speech2_value/chat');
+
+                // Push the result to Firebase
+                ref.set(result);
+            };
+
+        } else {
+            startButton.style.display = 'none';
+            spokenText.textContent = 'Speech recognition is not supported in your browser.';
+        }
+    </script>
+
+    <script>
+        const homeBtn = document.getElementById("homeBtn");
+        const openModalButton = document.getElementById("openModalButton");
+        const modal = document.getElementById("myModal");
+        const closeModal = document.getElementById("closeModal");
+
+        homeBtn.onclick = function () {
+            window.location.href = "index.html";
+        }
+
+        openModalButton.onclick = function () {
+            modal.style.display = "flex";
+        }
+
+        closeModal.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+
+<script>
+
+const labelElement = document.getElementById("chatchat");
+
+const dataRef = database.ref("speech1_value/chat");
+
+dataRef.on("value", (snapshot) => {
+    const chatData = snapshot.val();
+    if (chatData) {
+        labelElement.textContent = chatData;
+    } else {
+        labelElement.textContent = "No chat data available";
+    }
+});
+</script>
+</body>
+
+</html>

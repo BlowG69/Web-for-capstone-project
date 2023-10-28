@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="output.css">
+        <title>Display</title>
+    </head>
+    
+    <body>
+    
+        <!-- Navbar -->
+        <div class="navbar">
+            <!-- Logo -->
+            <div class="logo">
+                <img src="outputlogo.jpg" alt="Your Logo">
+            </div>
+    
+            <div class="buttons">
+                <button id="homeBtn"><a href="index.html">HOME</a></button>
+                <button id="openModalButton">EXIT</button>
+            </div>
+        </div>
+    
+        <div class="container">
+            <label id="chatchat">Currently no message!</label><br>
+            <input id="myInput"><br>
+            <button id="sendText">Send</button>
+        </div>
+    
+    
+    
+        <!-- MODAL WHEN EXIT IS PRESSED -->
+        <div id="myModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span id="closeModal" style="cursor: pointer; position: absolute; top: 10px; right: 10px;">&times;</span>
+                <img src="INPUT.jpg" alt="Modal Image">
+                <div class="centered">
+                    <h1>Do you want to exit?</h1>
+                    <button><a href="index.html">YES</a></button>
+                </div>
+            </div>
+        </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-database.js"></script>
+
+<script>
+    const homeBtn = document.getElementById("homeBtn"); // Get the home button element
+    const openModalButton = document.getElementById("openModalButton"); // Get the open modal button element
+    const modal = document.getElementById("myModal"); // Get the modal element
+    const closeModal = document.getElementById("closeModal"); // Get the close modal button element
+
+    homeBtn.onclick = function () {
+        window.location.href = "index.html";
+    }
+
+    openModalButton.onclick = function () {
+        modal.style.display = "flex"; // Display the modal
+    }
+
+    closeModal.onclick = function () {
+        modal.style.display = "none"; // Hide the modal when the close button is clicked
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyA5GAprlsMs8y5K1Zs5o9dU4Yf1IXI6SDU",
+        authDomain: "sign-language-321a6.firebaseapp.com",
+        databaseURL: "https://sign-language-321a6-default-rtdb.firebaseio.com",
+        projectId: "sign-language-321a6",
+        storageBucket: "sign-language-321a6.appspot.com",
+        messagingSenderId: "1055103413451",
+        appId: "1:1055103413451:web:72ef9f70e5f751684b3f4e",
+        measurementId: "G-B07XWE015G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const database = firebase.database();
+    const counterRef = database.ref("user_input");
+
+    const incrementButton = document.getElementById("sendText");
+
+    document.getElementById("sendText").onclick = function () {
+        console.log("xxx");
+        let chat = document.getElementById("myInput").value;
+        const dataRef = database.ref("user2_input/chat/");
+        dataRef.set(chat); // This will create a new entry in the "user_input" node
+    };
+
+
+    const labelElement = document.getElementById("chatchat");
+
+    const dataRef = database.ref("user1_input/chat/");
+
+    dataRef.on("value", (snapshot) => {
+        const chatData = snapshot.val();
+        if (chatData) {
+            labelElement.textContent = chatData;
+        } else {
+            labelElement.textContent = "No chat data available";
+        }
+    });
+</script>
+</body>
+
+</html>
